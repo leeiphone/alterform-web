@@ -108,7 +108,7 @@ export const CheckoutModal: React.FC = () => {
               </div>
               <div className="flex justify-between pt-1 font-bold text-sm">
                 <span>최종 결제 금액</span>
-                <span className="text-brand-white">₩{completedOrder.totalAmount.toLocaleString()}</span>
+                <span className="text-brand-white">미정</span>
               </div>
             </div>
 
@@ -238,7 +238,7 @@ export const CheckoutModal: React.FC = () => {
             <div className="pt-4 border-t border-brand-border space-y-4">
               <div className="flex justify-between items-center font-mono">
                 <span className="text-xs text-brand-muted">결제 예정 금액 ({cart.length}개 품목)</span>
-                <span className="text-xl font-bold text-white">₩{subtotal.toLocaleString()}</span>
+                <span className="text-base font-bold text-white">미정</span>
               </div>
 
               <button
@@ -250,7 +250,7 @@ export const CheckoutModal: React.FC = () => {
                   <span>주문 및 결제 처리 중...</span>
                 ) : (
                   <>
-                    <span>₩{subtotal.toLocaleString()} 결제 승인하기</span>
+                    <span>주문 접수하기</span>
                     <Send className="w-4 h-4" />
                   </>
                 )}

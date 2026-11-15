@@ -203,8 +203,8 @@ export const LiquidGlassProductModal: React.FC = () => {
               <p className="text-xs text-white/60 font-light mt-0.5">
                 {selectedProduct.nameKr}
               </p>
-              <div className="text-2xl font-light text-white mt-3 font-body">
-                ₩{selectedProduct.price.toLocaleString()}
+              <div className="text-xl sm:text-2xl font-light text-white mt-3 font-body">
+                미정
               </div>
             </div>
 

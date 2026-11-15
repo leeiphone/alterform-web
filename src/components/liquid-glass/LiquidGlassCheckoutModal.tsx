@@ -109,7 +109,7 @@ export const LiquidGlassCheckoutModal: React.FC = () => {
               </div>
               <div className="flex justify-between pt-1 font-normal text-sm">
                 <span>최종 결제 금액</span>
-                <span className="font-heading font-bold text-lg text-white">₩{completedOrder.totalAmount.toLocaleString()}</span>
+                <span className="font-heading font-medium text-base text-white">미정</span>
               </div>
             </div>
 
@@ -253,7 +253,7 @@ export const LiquidGlassCheckoutModal: React.FC = () => {
             <div className="pt-4 border-t border-white/10 space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-xs text-white/60 font-light">결제 금액 ({cart.length}개 품목)</span>
-                <span className="text-xl font-heading font-bold tracking-tight text-white">₩{subtotal.toLocaleString()}</span>
+                <span className="text-base font-heading font-medium tracking-tight text-white">미정</span>
               </div>
 
               <button
@@ -262,10 +262,10 @@ export const LiquidGlassCheckoutModal: React.FC = () => {
                 className="w-full py-4 rounded-full bg-white hover:bg-neutral-200 text-black text-sm font-semibold tracking-wide transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer shadow-xl"
               >
                 {isSubmitting ? (
-                  <span>주문 및 결제 처리 중...</span>
+                  <span>주문 및 요청 처리 중...</span>
                 ) : (
                   <>
-                    <span>₩{subtotal.toLocaleString()} 결제 승인하기</span>
+                    <span>주문 접수하기</span>
                     <Send className="w-4 h-4" />
                   </>
                 )}

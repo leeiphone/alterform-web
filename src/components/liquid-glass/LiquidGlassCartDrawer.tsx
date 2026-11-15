@@ -14,8 +14,6 @@ export const LiquidGlassCartDrawer: React.FC = () => {
 
   if (!isCartOpen) return null;
 
-  const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-
   const handleCheckout = () => {
     setIsCartOpen(false);
     setIsCheckoutOpen(true);
@@ -124,8 +122,8 @@ export const LiquidGlassCartDrawer: React.FC = () => {
                         </button>
                       </div>
 
-                      <span className="text-sm font-medium text-white">
-                        ₩{(item.product.price * item.quantity).toLocaleString()}
+                      <span className="text-sm font-light text-white/90">
+                        미정
                       </span>
                     </div>
                   </div>
@@ -144,8 +142,8 @@ export const LiquidGlassCartDrawer: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-base font-normal text-white pt-2 border-t border-white/10">
                   <span>합계</span>
-                  <span className="text-lg font-heading font-bold tracking-tight">
-                    ₩{subtotal.toLocaleString()}
+                  <span className="text-base font-medium tracking-tight text-white/90">
+                    미정
                   </span>
                 </div>
               </div>

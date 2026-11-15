@@ -116,9 +116,8 @@ export const ShopSection: React.FC = () => {
               {/* Price and Cart Button */}
               <div className="flex items-center justify-between pt-2">
                 <div className="font-mono">
-                  <span className="text-xs text-brand-muted mr-1">KRW</span>
-                  <span className="text-base font-bold text-white tracking-tight">
-                    ₩{product.price.toLocaleString()}
+                  <span className="text-base font-light text-white tracking-tight">
+                    미정
                   </span>
                 </div>
 

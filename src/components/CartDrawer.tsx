@@ -14,8 +14,6 @@ export const CartDrawer: React.FC = () => {
 
   if (!isCartOpen) return null;
 
-  const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-
   const handleCheckout = () => {
     setIsCartOpen(false);
     setIsCheckoutOpen(true);
@@ -115,8 +113,8 @@ export const CartDrawer: React.FC = () => {
                         </button>
                       </div>
 
-                      <span className="text-xs font-mono font-bold text-white">
-                        ₩{(item.product.price * item.quantity).toLocaleString()}
+                      <span className="text-xs font-mono font-medium text-white/90">
+                        미정
                       </span>
                     </div>
                   </div>
@@ -136,7 +134,7 @@ export const CartDrawer: React.FC = () => {
                 <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-brand-border/40">
                   <span>총 주문 금액</span>
                   <span className="text-base text-brand-white">
-                    ₩{subtotal.toLocaleString()}
+                    미정
                   </span>
                 </div>
               </div>

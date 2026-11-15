@@ -140,8 +140,8 @@ export const LiquidGlassStore: React.FC = () => {
 
                   {/* Price and Add button */}
                   <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                    <div className="text-lg font-light text-white font-body">
-                      ₩{product.price.toLocaleString()}
+                    <div className="text-base sm:text-lg font-light text-white font-body">
+                      미정
                     </div>
 
                     <button

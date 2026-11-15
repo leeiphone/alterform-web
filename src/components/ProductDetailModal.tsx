@@ -90,8 +90,8 @@ export const ProductDetailModal: React.FC = () => {
               <p className="text-xs text-brand-gray font-light mt-0.5">
                 {selectedProduct.nameKr}
               </p>
-              <div className="text-xl font-bold font-mono text-white mt-3">
-                ₩{selectedProduct.price.toLocaleString()}
+              <div className="text-xl font-light font-body text-white mt-3">
+                미정
               </div>
             </div>
 
