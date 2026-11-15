@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 576" width="380" height="576">
+  <ellipse cx="180" cy="205" rx="72" ry="118" transform="rotate(12 180 205)" fill="none" stroke="#14161C" stroke-width="22"/>
+  <path d="M128 385 H252 L190 166 Z" fill="none" stroke="#14161C" stroke-width="24" stroke-linejoin="miter" stroke-miterlimit="12"/>
+  <g font-family="Futura, Avenir Next, sans-serif" font-weight="500" text-anchor="middle" fill="#14161C">
+    <text x="190" y="478" font-size="46" letter-spacing="8">&#923;LTER</text>
+    <text x="190" y="536" font-size="46" letter-spacing="8">FORM</text>
+  </g>
+</svg>

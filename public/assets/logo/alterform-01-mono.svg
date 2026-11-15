@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 570" width="380" height="570">
+  <g transform="translate(8,9)">
+  <ellipse cx="180" cy="205" rx="72" ry="118" transform="rotate(12 180 205)" fill="none" stroke="#14161C" stroke-width="22"/>
+  <ellipse cx="166" cy="92" rx="56" ry="33" transform="rotate(-38 166 92)" fill="none" stroke="#14161C" stroke-width="18"/>
+  <path d="M128 385 H252 L190 166 Z" fill="none" stroke="#14161C" stroke-width="24" stroke-linejoin="miter" stroke-miterlimit="12"/>
+  </g>
+  <ellipse cx="180" cy="205" rx="72" ry="118" transform="rotate(12 180 205)" fill="none" stroke="#7D848E" stroke-width="22"/>
+  <ellipse cx="166" cy="92" rx="56" ry="33" transform="rotate(-38 166 92)" fill="none" stroke="#7D848E" stroke-width="18"/>
+  <path d="M128 385 H252 L190 166 Z" fill="none" stroke="#7D848E" stroke-width="24" stroke-linejoin="miter" stroke-miterlimit="12"/>
+  <g font-family="Futura, Avenir Next, sans-serif" font-weight="500" text-anchor="middle" fill="#14161C">
+    <text x="190" y="472" font-size="46" letter-spacing="8">&#923;LTER</text>
+    <text x="190" y="530" font-size="46" letter-spacing="8">FORM</text>
+  </g>
+</svg>

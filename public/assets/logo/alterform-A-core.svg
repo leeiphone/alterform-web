@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 560" width="480" height="560">
+  <g transform="translate(60,0) translate(190,228) scale(1.22) translate(-190,-228)">
+    <g transform="translate(8,9)"><ellipse cx="180" cy="196" rx="81" ry="132" transform="rotate(12 180 196)" fill="none" stroke="#14161C" stroke-width="22"/>
+    <path d="M126 392 H254 L190 158 Z" fill="none" stroke="#14161C" stroke-width="24" stroke-linejoin="miter" stroke-miterlimit="12"/></g>
+    <ellipse cx="180" cy="196" rx="81" ry="132" transform="rotate(12 180 196)" fill="none" stroke="#6C2E91" stroke-width="22"/>
+    <path d="M126 392 H254 L190 158 Z" fill="none" stroke="#6C2E91" stroke-width="24" stroke-linejoin="miter" stroke-miterlimit="12"/>
+  </g>
+  <text x="235" y="500" text-anchor="middle" font-family="Futura, Avenir Next, sans-serif" font-weight="500" font-size="44" letter-spacing="10" fill="#14161C">&#923;LTERFORM</text>
+</svg>
