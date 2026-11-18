@@ -201,7 +201,7 @@ export const PRODUCTS: Product[] = [
     price: 390000,
     description: '볼드하고 묵직한 모놀리스 돔에 가로 방향의 관통 캡슐 애퍼처(Aperture)와 상단을 깊게 가로지르는 슬롯 홈을 감산(Subtractive)하여 비워낸 링. 안과 밖이 관통되며 생겨난 음영과 비어있는 공간 자체가 형태의 중심이 되는 순수 감산 조형미를 보여줍니다.',
     image: '/assets/rings/void-triple-bore.png?v=2',
-    modelUrl: '/assets/models/void-ring.glb?v=2',
+    modelUrl: '/assets/models/void-ring.glb',
     details: {
       material: '단일 블록 소결 지르코니아 모놀리스 (Pure White Zirconia)',
       process: 'CAD Boolean Subtraction & High-Temp Sintering',

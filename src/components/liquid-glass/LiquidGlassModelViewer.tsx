@@ -1,17 +1,25 @@
-import React, { Suspense, useRef, useState } from 'react';
+import React, { Suspense, useRef, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Center, useGLTF, Float } from '@react-three/drei';
+import { OrbitControls, Center, useGLTF, Float, useProgress } from '@react-three/drei';
 import * as THREE from 'three';
 import { RotateCcw, Play, Pause, Sparkles, Box } from 'lucide-react';
 
 interface ModelProps {
   url: string;
   ceramicMode: boolean;
+  onLoaded?: () => void;
 }
 
-function Model({ url, ceramicMode }: ModelProps) {
+function Model({ url, ceramicMode, onLoaded }: ModelProps) {
   const { scene } = useGLTF(url);
   const modelRef = useRef<THREE.Group>(null);
+
+  // Notify parent that model scene is ready
+  useEffect(() => {
+    if (scene && onLoaded) {
+      onLoaded();
+    }
+  }, [scene, onLoaded]);
 
   // Clone scene so R3F doesn't dispose or mutate the globally cached GLTF instance
   const { clonedScene, originalMaterials } = React.useMemo(() => {
@@ -75,14 +83,9 @@ function Model({ url, ceramicMode }: ModelProps) {
   );
 }
 
-// Preload 3D models for instant loading on modal open
-useGLTF.preload('/assets/models/fluid-ring.glb');
-useGLTF.preload('/assets/models/void-ring.glb?v=2');
-useGLTF.preload('/assets/models/growth-ring.glb');
-useGLTF.preload('/assets/models/structure-ring.glb');
-useGLTF.preload('/assets/models/distortion-ring.glb');
-useGLTF.preload('/assets/models/distortion-crumple-ring.glb');
-useGLTF.preload('/assets/models/case-r2.glb');
+// NOTE: Preload calls removed intentionally to avoid 350MB simultaneous downloads
+// that choke network and crash WebGL context on other client machines.
+// Models are now loaded on-demand per user request with full network bandwidth.
 
 export class WebGLErrorBoundary extends React.Component<
   { children: React.ReactNode; fallback?: React.ReactNode },
@@ -103,25 +106,47 @@ export class WebGLErrorBoundary extends React.Component<
 
   render() {
     if (this.state.hasError) {
-      return this.props.fallback || (
-        <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-white/60">
-          <Box className="w-8 h-8 mb-2 text-white/30" />
-          <span className="text-xs font-mono">3D PREVIEW UNAVAILABLE</span>
-        </div>
+      return (
+        this.props.fallback || (
+          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-white/60">
+            <Box className="w-8 h-8 mb-2 text-white/30" />
+            <span className="text-xs font-mono">3D PREVIEW UNAVAILABLE</span>
+          </div>
+        )
       );
     }
     return this.props.children;
   }
 }
 
-// Clean loading state with spinning loader
-function Loader() {
+// Visual loading overlay with real-time download percentage and progress bar
+function ModelLoadingIndicator({ isReady }: { isReady: boolean }) {
+  const { active, progress } = useProgress();
+  const show = active || !isReady;
+  const pct = Math.min(Math.max(Math.round(progress), 0), 100);
+
+  if (!show) return null;
+
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm z-10 text-white select-none">
-      <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin mb-3" />
-      <span className="text-xs font-mono tracking-widest text-white/70">
-        3D SPECIMEN LOADING...
-      </span>
+    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-md z-20 text-white select-none transition-opacity duration-500 pointer-events-none">
+      <div className="liquid-glass rounded-2xl p-5 flex flex-col items-center gap-3 border border-white/20 shadow-2xl max-w-xs w-full mx-4">
+        <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+        <div className="text-center space-y-1">
+          <div className="text-xs font-mono tracking-widest text-white/90 font-medium">
+            LOADING 3D SPECIMEN
+          </div>
+          <div className="text-[11px] font-mono text-white/60">
+            {pct > 0 ? `${pct}% STREAMED` : 'INITIALIZING ASSET...'}
+          </div>
+        </div>
+        {/* Progress Track */}
+        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-sky-400 to-white transition-all duration-300 ease-out"
+            style={{ width: `${Math.max(pct, 8)}%` }}
+          />
+        </div>
+      </div>
     </div>
   );
 }
@@ -142,6 +167,12 @@ export const LiquidGlassModelViewer: React.FC<LiquidGlassModelViewerProps> = ({
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
   const [ceramicMode, setCeramicMode] = useState<boolean>(false);
   const [controlsKey, setControlsKey] = useState<number>(0);
+  const [isModelReady, setIsModelReady] = useState<boolean>(false);
+
+  // Reset ready state when modelUrl changes
+  useEffect(() => {
+    setIsModelReady(false);
+  }, [modelUrl]);
 
   const handleResetCamera = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -149,74 +180,95 @@ export const LiquidGlassModelViewer: React.FC<LiquidGlassModelViewerProps> = ({
   };
 
   const fallback = fallbackImage ? (
-    <img
-      src={fallbackImage}
-      alt="Product preview"
-      className="max-h-72 w-auto object-contain drop-shadow-[0_25px_40px_rgba(0,0,0,0.9)]"
-    />
+    <div className="relative w-full h-full flex items-center justify-center">
+      <img
+        src={fallbackImage}
+        alt="Product preview"
+        className="max-h-72 w-auto object-contain drop-shadow-[0_25px_40px_rgba(0,0,0,0.9)]"
+      />
+      <div className="absolute bottom-4 px-3 py-1 rounded-full bg-black/60 border border-white/15 text-[10px] font-mono text-white/70">
+        PHOTO PREVIEW (3D NOT SUPPORTED)
+      </div>
+    </div>
   ) : undefined;
 
   return (
-    <div className={`relative w-full h-full min-h-[300px] flex items-center justify-center select-none overflow-hidden ${className}`}>
+    <div
+      className={`relative w-full h-full min-h-[300px] flex items-center justify-center select-none overflow-hidden ${className}`}
+    >
+      {/* Fallback image as underlay while 3D is streaming */}
+      {fallbackImage && !isModelReady && (
+        <div className="absolute inset-0 flex items-center justify-center z-0 opacity-40 filter blur-[1px]">
+          <img
+            src={fallbackImage}
+            alt="Preview underlay"
+            className="max-h-72 w-auto object-contain"
+          />
+        </div>
+      )}
+
+      {/* Real-time Streaming Progress Indicator */}
+      <ModelLoadingIndicator isReady={isModelReady} />
+
       <WebGLErrorBoundary fallback={fallback}>
-        <Suspense fallback={<Loader />}>
-          <Canvas
+        <Canvas
           camera={{ position: [0, 0.15, 2.8], fov: 42 }}
-          gl={{ antialias: true, alpha: true, toneMapping: THREE.ACESFilmicToneMapping }}
-          className="w-full h-full cursor-grab active:cursor-grabbing"
+          dpr={[1, 2]}
+          gl={{
+            antialias: true,
+            alpha: true,
+            powerPreference: 'high-performance',
+            toneMapping: THREE.ACESFilmicToneMapping,
+          }}
+          className={`w-full h-full cursor-grab active:cursor-grabbing transition-opacity duration-700 z-10 ${
+            isModelReady ? 'opacity-100' : 'opacity-0'
+          }`}
         >
           {/* Studio Lights for High-Gloss Ceramic Jewellery */}
           <ambientLight intensity={1.2} />
-          
+
           {/* Key Light */}
-          <directionalLight
-            position={[4, 6, 4]}
-            intensity={2.4}
-            color="#FFFFFF"
-          />
+          <directionalLight position={[4, 6, 4]} intensity={2.4} color="#FFFFFF" />
 
           {/* Cool Rim Light */}
-          <directionalLight
-            position={[-4, -2, -3]}
-            intensity={1.2}
-            color="#D0E0FF"
-          />
+          <directionalLight position={[-4, -2, -3]} intensity={1.2} color="#D0E0FF" />
 
           {/* Warm Rim Light */}
-          <directionalLight
-            position={[3, -4, 2]}
-            intensity={0.8}
-            color="#FFF4E6"
-          />
+          <directionalLight position={[3, -4, 2]} intensity={0.8} color="#FFF4E6" />
 
           {/* Glint Highlight */}
-          <pointLight
-            position={[0, 3, 2]}
-            intensity={2.0}
-            color="#FFFFFF"
-          />
+          <pointLight position={[0, 3, 2]} intensity={2.0} color="#FFFFFF" />
 
-          <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.3}>
-            <Center top={false}>
-              <Model url={modelUrl} ceramicMode={ceramicMode} />
-            </Center>
-          </Float>
+          <Suspense fallback={null}>
+            <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.3}>
+              <Center top={false}>
+                <Model
+                  url={modelUrl}
+                  ceramicMode={ceramicMode}
+                  onLoaded={() => setIsModelReady(true)}
+                />
+              </Center>
+            </Float>
 
-          <OrbitControls
-            key={controlsKey}
-            enablePan={false}
-            minDistance={1.2}
-            maxDistance={4.5}
-            autoRotate={autoRotate}
-            autoRotateSpeed={1.8}
-            makeDefault
-          />
+            <OrbitControls
+              key={controlsKey}
+              enablePan={false}
+              minDistance={1.2}
+              maxDistance={4.5}
+              autoRotate={autoRotate}
+              autoRotateSpeed={1.8}
+              makeDefault
+            />
+          </Suspense>
         </Canvas>
-      </Suspense>
-    </WebGLErrorBoundary>
+      </WebGLErrorBoundary>
 
-      {/* Floating Control Toolbar */}
-      <div className="absolute bottom-3 inset-x-3 flex items-center justify-between pointer-events-none z-20">
+      {/* Floating Control Toolbar (Visible when 3D is ready) */}
+      <div
+        className={`absolute bottom-3 inset-x-3 flex items-center justify-between pointer-events-none z-20 transition-opacity duration-500 ${
+          isModelReady ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+      >
         <div className="pointer-events-auto flex items-center gap-1.5 liquid-glass rounded-full px-3 py-1.5 text-[11px] font-mono text-white/80 shadow-lg border border-white/10">
           <Box className="w-3.5 h-3.5 text-sky-400" />
           <span>360° DRAG & ZOOM</span>
@@ -230,13 +282,15 @@ export const LiquidGlassModelViewer: React.FC<LiquidGlassModelViewerProps> = ({
                 e.stopPropagation();
                 setCeramicMode(!ceramicMode);
               }}
-              title={ceramicMode ? "원본 텍스처로 보기" : "퓨어 화이트 지르코니아 셰이더 적용"}
+              title={ceramicMode ? '원본 텍스처로 보기' : '퓨어 화이트 지르코니아 셰이더 적용'}
               className={`liquid-glass h-8 px-2.5 rounded-full flex items-center gap-1 text-[11px] transition-all cursor-pointer shadow-md ${
                 ceramicMode ? 'bg-white text-black font-semibold' : 'text-white/80 hover:text-white'
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{ceramicMode ? "Pure Zirconia" : "Texture"}</span>
+              <span className="hidden sm:inline">
+                {ceramicMode ? 'Pure Zirconia' : 'Texture'}
+              </span>
             </button>
           )}
 
@@ -246,7 +300,7 @@ export const LiquidGlassModelViewer: React.FC<LiquidGlassModelViewerProps> = ({
               e.stopPropagation();
               setAutoRotate(!autoRotate);
             }}
-            title={autoRotate ? "회전 멈춤" : "자동 회전"}
+            title={autoRotate ? '회전 멈춤' : '자동 회전'}
             className="liquid-glass w-8 h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white transition-all cursor-pointer shadow-md"
           >
             {autoRotate ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
@@ -265,3 +319,5 @@ export const LiquidGlassModelViewer: React.FC<LiquidGlassModelViewerProps> = ({
     </div>
   );
 };
+
+export default LiquidGlassModelViewer;
